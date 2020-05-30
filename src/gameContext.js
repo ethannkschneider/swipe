@@ -5,12 +5,21 @@ import * as API from './api';
 const GameStateContext = React.createContext();
 const GameDispatchContext = React.createContext();
 
+const localStorageKey = 'swipe-game';
 const initialGameState = {
     player: '',
     game: null,
     loading: false,
     loadingMessage: '',
     errorMessage: ''
+};
+
+const withLocalStorageCache = reducer => {
+    return (state, action) => {
+        const newState = reducer(state, action);
+        localStorage.setItem(localStorageKey, JSON.stringify(newState));
+        return newState;
+    };
 };
 
 function gameReducer(state, action) {
@@ -47,7 +56,10 @@ function gameReducer(state, action) {
 }
 
 function GameProvider({ children }) {
-    const [state, dispatch] = React.useReducer(gameReducer, initialGameState);
+    const [state, dispatch] = React.useReducer(
+        withLocalStorageCache(gameReducer),
+        JSON.parse(localStorage.getItem(localStorageKey)) || initialGameState
+    );
 
     return (
         <GameStateContext.Provider value={state}>
