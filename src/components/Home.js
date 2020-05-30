@@ -4,7 +4,13 @@ import 'react-tabs/style/react-tabs.css';
 
 import CreateGameForm from './CreateGameForm';
 import JoinGameForm from './JoinGameForm';
+import Game from './Game';
+import { useGameState } from '../gameContext';
+
 export default () => {
+    const { game } = useGameState();
+
+    if (game) return <Game />;
     return (
         <Tabs>
             <TabList>

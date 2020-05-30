@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
-import * as API from '../api';
+
+import { useGameDispatch, createGame } from '../gameContext';
 
 function CreatGameForm() {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
+    const gameDispatch = useGameDispatch();
 
-    const onSubmit = e => {
+    const handleSubmit = e => {
         e.preventDefault();
-        API.createGame({ name, room })
-            .then(data => {
-                console.log('data: ', data);
-            })
-            .catch(error => {
-                console.log('error: ', error);
-            });
+        createGame(gameDispatch, { name, room });
     };
 
     return (
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
             <input
                 type="text"
                 placeholder="your name"

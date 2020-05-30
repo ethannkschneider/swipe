@@ -24,7 +24,7 @@ async function main() {
     const server = http.createServer(app);
     const io = socketIO(server);
 
-    setupSockets(io);
+    // setupSockets(io);
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
@@ -39,32 +39,48 @@ async function main() {
                 .trim()
                 .escape(),
             body('room')
-                .length({ min: 3 })
+                .isLength({ min: 3 })
                 .trim()
                 .escape()
         ],
         async (req, res, next) => {
             const { name, room } = req.body;
             const game = await gameService.createNewGame({ room });
-            const player = playerService.createNewPlayer({ name, game });
-            res.send({ player, room: game.room });
+            const player = await playerService.createNewPlayer({ name, game });
+            res.send({ player, game });
         }
     );
 
-    app.post('/join/:room', async (req, res, next) => {
-        const game = Game.findActiveGameByRoom(req.params.room);
-        if (!game) return next(new Error('No active game found'));
+    app.post(
+        '/game/join',
+        [
+            body('name')
+                .not()
+                .isEmpty()
+                .trim()
+                .escape(),
+            body('room')
+                .isLength({ min: 3 })
+                .trim()
+                .escape()
+        ],
+        async (req, res, next) => {
+            const { name, room } = req.body;
+            const game = gameService.findActiveGameByRoom(room);
+            if (!game)
+                return next(new Error('Sorry, that room does not exist'));
 
-        const { name, token } = req.body;
-        const player = await Player.create({
-            name,
-            token,
-            game,
-            words: [],
-            points: 0
-        });
+            const player = await playerService.createNewPlayer({
+                name,
+                game
+            });
 
-        return;
+            res.send({ player: player.name, room: game.room });
+        }
+    );
+
+    app.get('/play/:room', async (req, res, next) => {
+        const room = req.params.room;
     });
 
     server.listen(process.env.PORT || 5000, () => {
