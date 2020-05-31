@@ -8,6 +8,7 @@ const GameDispatchContext = React.createContext();
 const localStorageKey = 'swipe-game';
 const initialGameState = {
     player: '',
+    room: '',
     game: null,
     loading: false,
     loadingMessage: '',
@@ -37,7 +38,7 @@ function gameReducer(state, action) {
                 loadingMessage: '',
                 errorMessage: '',
                 player: action.payload.player,
-                game: action.payload.game
+                room: action.payload.room
             };
         case 'fail_create_game':
             return {
@@ -46,8 +47,30 @@ function gameReducer(state, action) {
                 loadingMessage: '',
                 errorMessage: 'Failed to create game. Please try again.'
             };
-        case 'join_game': {
-            return { ...state, name: action.payload.name };
+        case 'start_join_game': {
+            return {
+                ...state,
+                loading: true,
+                loadingMessage: 'Creating your game...'
+            };
+        }
+        case 'finish_join_game': {
+            return {
+                ...state,
+                loading: false,
+                loadingMessage: '',
+                errorMessage: '',
+                player: action.payload.player,
+                room: action.payload.room
+            };
+        }
+        case 'fail_join_game': {
+            return {
+                ...state,
+                loading: false,
+                loadingMessage: '',
+                errorMessage: 'Failed to join game. Please try again.'
+            };
         }
         default: {
             throw new Error(`Unhandled action tupe: ${action.type}`);
@@ -92,14 +115,31 @@ function useGame() {
     return [useGameState(), useGameDispatch()];
 }
 
-async function createGame(dispatch, { name, room }) {
+async function createGame(dispatch, data) {
     dispatch({ type: 'start_create_game' });
     try {
-        const { game, player } = await API.createGame({ name, room });
-        dispatch({ type: 'finish_create_game', payload: { game, player } });
+        const { room, player } = await API.createGame(data);
+        dispatch({ type: 'finish_create_game', payload: { room, player } });
     } catch (error) {
         dispatch({ type: 'fail_create_game' });
     }
 }
 
-export { GameProvider, useGame, useGameState, useGameDispatch, createGame };
+async function joinGame(dispatch, data) {
+    dispatch({ type: 'start_join_game' });
+    try {
+        const { room, player } = await API.joinGame(data);
+        dispatch({ type: 'finish_join_game', payload: { room, player } });
+    } catch (error) {
+        dispatch({ type: 'fail_join_game' });
+    }
+}
+
+export {
+    GameProvider,
+    useGame,
+    useGameState,
+    useGameDispatch,
+    createGame,
+    joinGame
+};

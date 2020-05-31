@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useGame } from '../gameContext';
+import { useSocket } from '../hooks/sockets';
 
 function Game() {
-    const [{ game }, gameDispatch] = useGame();
-    const { room, players } = game;
+    const [{ room, player }, gameDispatch] = useGame();
 
-    console.log(game);
+    useSocket();
 
     return (
         <div>
-            <h2>Game: {room} </h2>
-            <p>Players: {players.map(player => player.name).join(', ')}</p>
+            <h2>Room: {room} </h2>
+            <p>Your name: {player.name}</p>
         </div>
     );
 }

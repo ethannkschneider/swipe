@@ -23,6 +23,7 @@ const createNewGame = ({ room }) => {
 };
 
 const findActiveGameByRoom = room => {
+    console.log('finding game with room: ', room);
     return Game.findOne({
         room,
         status: { $in: ['NOT_STARTED', 'IN_PROGRESS'] }

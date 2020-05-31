@@ -6,14 +6,23 @@ const Player = require('./Player');
 
 const Game = new Schema(
     {
-        room: String,
+        room: {
+            type: String,
+            validate: {
+                validator: function(v) {
+                    return /[a-zA-Z]/.test(v);
+                },
+                message: props => `${props.value} is not a valid phone number!`
+            },
+            required: [true, 'Room is required']
+        },
         status: {
             type: String,
             enum: ['NOT_STARTED', 'IN_PROGRESS', 'FINISHED']
         },
         players: [
             {
-                type: ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: 'Player'
             }
         ],
@@ -24,18 +33,5 @@ const Game = new Schema(
     },
     { timestamps: true }
 );
-
-Game.methods.addPlayer = async function(player, cb) {
-    await this.update({ $push: { players: player } });
-
-    return this.players.populate('Player');
-};
-
-Game.statics.findActiveGameByRoom = function(room, cb) {
-    return this.findOne({
-        room,
-        status: { $in: ['NOT_STARTED', 'IN_PROGRESS'] }
-    }).exec(cb);
-};
 
 module.exports = mongoose.model('Game', Game);

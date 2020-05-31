@@ -7,7 +7,7 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const { body } = require('express-validator');
 
-const setupSockets = require('./sockets');
+const { setupSockets } = require('./services/sockets');
 
 const Game = require('./models/Game');
 const Player = require('./models/Player');
@@ -24,7 +24,7 @@ async function main() {
     const server = http.createServer(app);
     const io = socketIO(server);
 
-    // setupSockets(io);
+    setupSockets(io);
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
@@ -44,10 +44,22 @@ async function main() {
                 .escape()
         ],
         async (req, res, next) => {
+            console.log('/game/create');
             const { name, room } = req.body;
+            try {
+                const existingGame = await gameService.findActiveGameByRoom(
+                    room
+                );
+                if (existingGame)
+                    return next(
+                        new Error('Game with that name already exists')
+                    );
+            } catch (error) {
+                return next(new Error('Error finding an active game by room'));
+            }
             const game = await gameService.createNewGame({ room });
             const player = await playerService.createNewPlayer({ name, game });
-            res.send({ player, game });
+            res.send({ player, room: game.room });
         }
     );
 
@@ -65,8 +77,14 @@ async function main() {
                 .escape()
         ],
         async (req, res, next) => {
+            console.log('/game/join');
             const { name, room } = req.body;
-            const game = gameService.findActiveGameByRoom(room);
+            let game;
+            try {
+                game = await gameService.findActiveGameByRoom(room);
+            } catch (error) {
+                return next(new Error('Error occurred while finding game'));
+            }
             if (!game)
                 return next(new Error('Sorry, that room does not exist'));
 
@@ -74,14 +92,9 @@ async function main() {
                 name,
                 game
             });
-
-            res.send({ player: player.name, room: game.room });
+            res.send({ player, room: game.room });
         }
     );
-
-    app.get('/play/:room', async (req, res, next) => {
-        const room = req.params.room;
-    });
 
     server.listen(process.env.PORT || 5000, () => {
         console.log(`Server started on port ${server.address().port} :)`);

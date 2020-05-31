@@ -8,9 +8,10 @@ import Game from './Game';
 import { useGameState } from '../gameContext';
 
 export default () => {
-    const { game } = useGameState();
+    const { room } = useGameState();
+    console.log({ room });
 
-    if (game) return <Game />;
+    if (room) return <Game />;
     return (
         <Tabs>
             <TabList>
