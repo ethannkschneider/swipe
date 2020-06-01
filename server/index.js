@@ -7,7 +7,7 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const { body } = require('express-validator');
 
-const { setupSockets } = require('./services/sockets');
+const { SocketHandler } = require('./services/sockets');
 
 const Game = require('./models/Game');
 const Player = require('./models/Player');
@@ -22,9 +22,9 @@ async function main() {
 
     const app = express();
     const server = http.createServer(app);
-    const io = socketIO(server);
+    const socketHandler = new SocketHandler(socketIO(server));
 
-    setupSockets(io);
+    socketHandler.setupSockets();
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
@@ -58,7 +58,14 @@ async function main() {
                 return next(new Error('Error finding an active game by room'));
             }
             const game = await gameService.createNewGame({ room });
-            const player = await playerService.createNewPlayer({ name, game });
+            const player = await playerService.createNewPlayer({
+                name,
+                game,
+                isCreator: true
+            });
+
+            await gameService.addPlayer(player, game);
+
             res.send({ player, room: game.room });
         }
     );
@@ -92,6 +99,9 @@ async function main() {
                 name,
                 game
             });
+
+            await gameService.addPlayer(player, game);
+
             res.send({ player, room: game.room });
         }
     );

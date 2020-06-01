@@ -8,7 +8,8 @@ const Player = new Schema(
         game: ObjectId,
         words: [String],
         points: Number,
-        token: String
+        token: String,
+        isCreator: Boolean
     },
     { timestamps: true }
 );

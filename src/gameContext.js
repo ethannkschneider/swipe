@@ -7,9 +7,9 @@ const GameDispatchContext = React.createContext();
 
 const localStorageKey = 'swipe-game';
 const initialGameState = {
-    player: '',
+    player: { name: '', isCreator: false },
+    game: { status: 'NOT_STARTED', players: [] },
     room: '',
-    game: null,
     loading: false,
     loadingMessage: '',
     errorMessage: ''
@@ -70,6 +70,15 @@ function gameReducer(state, action) {
                 loading: false,
                 loadingMessage: '',
                 errorMessage: 'Failed to join game. Please try again.'
+            };
+        }
+        case 'update_players': {
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    players: action.payload.players
+                }
             };
         }
         default: {

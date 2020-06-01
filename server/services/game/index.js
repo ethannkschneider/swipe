@@ -27,10 +27,18 @@ const findActiveGameByRoom = room => {
     return Game.findOne({
         room,
         status: { $in: ['NOT_STARTED', 'IN_PROGRESS'] }
-    });
+    }).populate('players');
+};
+
+const addPlayer = (player, game) => {
+    console.log('adding player');
+
+    game.players.push(player);
+    return game.save();
 };
 
 module.exports = {
     createNewGame,
-    findActiveGameByRoom
+    findActiveGameByRoom,
+    addPlayer
 };
