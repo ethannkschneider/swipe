@@ -13,6 +13,21 @@ const createNewPlayer = ({ name, game, isCreator = false }) => {
     });
 };
 
+const updateSocketId = async (id, socketId) => {
+    const player = await Player.findById(id);
+    player.socketId = socketId;
+    return player.save();
+};
+
+const findBySocketId = socketId => {
+    return Player.findOne({ socketId }).populate({
+        path: 'game',
+        populate: 'players'
+    });
+};
+
 module.exports = {
-    createNewPlayer
+    createNewPlayer,
+    updateSocketId,
+    findBySocketId
 };

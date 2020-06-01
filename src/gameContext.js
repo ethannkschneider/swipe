@@ -7,7 +7,7 @@ const GameDispatchContext = React.createContext();
 
 const localStorageKey = 'swipe-game';
 const initialGameState = {
-    player: { name: '', isCreator: false },
+    player: { name: '', isCreator: false, id: '' },
     game: { status: 'NOT_STARTED', players: [] },
     room: '',
     loading: false,

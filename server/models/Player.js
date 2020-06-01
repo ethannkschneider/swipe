@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const Player = new Schema(
     {
         name: String,
-        game: ObjectId,
+        game: {
+            type: Schema.Types.ObjectId
+        },
         words: [String],
         points: Number,
         token: String,
-        isCreator: Boolean
+        isCreator: Boolean,
+        socketId: String
     },
     { timestamps: true }
 );

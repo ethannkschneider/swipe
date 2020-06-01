@@ -1,4 +1,5 @@
 const gameService = require('../game');
+const playerService = require('../player');
 
 // server types
 // const PLAYER_JOINED = 'PLAYER_JOINED';
@@ -19,17 +20,41 @@ class SocketHandler {
     }
 
     _broadcastToRoom(room, msgType, data) {
+        console.log(
+            `broadcasting the following message of type ${msgType} to room ${room}:`
+        );
+        console.log(data);
         this._io.sockets.in(room).emit(msgType, JSON.stringify(data));
     }
 
-    _onDisconnect(socket) {
+    async _onDisconnect(socket) {
         console.log('disconnected');
+        console.log('id:', socket.id);
+        const player = await playerService.findBySocketId(socket.id);
+        const { room, players } = player.game;
+        this._broadcastToRoom(room, 'player_disconnected', {
+            name: player.name,
+            players
+        });
     }
 
-    async _onJoinRoom(socket, room) {
-        socket.join(room);
-        const game = await gameService.findActiveGameByRoom(room);
-        this._broadcastToRoom(room, 'player_joined', game.players);
+    _onJoinRoom(socket, data) {
+        const { room, playerId } = JSON.parse(data);
+        console.log('trying to join room', room);
+        socket.join(room, async () => {
+            console.log('player joined');
+            console.log('socket.rooms');
+            console.log(Object.keys(socket.rooms));
+            const player = await playerService.updateSocketId(
+                playerId,
+                socket.id
+            );
+            const game = await gameService.findActiveGameByRoom(room);
+            this._broadcastToRoom(room, 'player_joined', {
+                name: player.name,
+                players: game.players
+            });
+        });
     }
 
     setupSockets() {

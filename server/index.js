@@ -63,7 +63,8 @@ async function main() {
                 game,
                 isCreator: true
             });
-
+            console.log('adding player to game:');
+            console.log(player, game);
             await gameService.addPlayer(player, game);
 
             res.send({ player, room: game.room });
@@ -102,7 +103,10 @@ async function main() {
 
             await gameService.addPlayer(player, game);
 
-            res.send({ player, room: game.room });
+            res.send({
+                player,
+                room: game.room
+            });
         }
     );
 
