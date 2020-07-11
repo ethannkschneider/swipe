@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 
-import { useGameDispatch, createGame } from '../gameContext';
+import { useSocket } from './SocketProvider';
 
 function CreatGameForm() {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
-    const gameDispatch = useGameDispatch();
+    const socket = useSocket();
 
     const handleSubmit = e => {
         e.preventDefault();
-        createGame(gameDispatch, { name, room });
+        socket.emit('createGame', { name, roomId: room });
     };
 
     return (

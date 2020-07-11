@@ -5,13 +5,12 @@ import 'react-tabs/style/react-tabs.css';
 import CreateGameForm from './CreateGameForm';
 import JoinGameForm from './JoinGameForm';
 import Game from './Game';
-import { useGameState } from '../gameContext';
+import { useGameState } from './GameStateProvider';
 
-export default () => {
-    const { room } = useGameState();
-    console.log({ room });
+function Home() {
+    const gameState = useGameState();
 
-    if (room) return <Game />;
+    if (gameState.room) return <Game />;
     return (
         <Tabs>
             <TabList>
@@ -27,4 +26,6 @@ export default () => {
             </TabPanel>
         </Tabs>
     );
-};
+}
+
+export default Home;
