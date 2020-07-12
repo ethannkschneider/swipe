@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Text, Flex } from 'theme-ui';
 
 import { useGameState } from './GameStateProvider';
 import { usePlayerState } from './PlayerStateProvider';
@@ -15,19 +16,27 @@ function WaitingScreen() {
     };
 
     return (
-        <div>
-            <p>Waiting for more players...</p>
+        <Flex sx={{ flexDirection: 'column', alignItems: 'center' }}>
+            <div className="mb-2">
+                <Text sx={{ fontWeight: 'bold' }} className="mb-2">
+                    Waiting for more players...
+                </Text>
+            </div>
+            <div className="mb-2">
+                <Text>Players: {players.map(pl => pl.name).join(', ')}</Text>
+            </div>
             {player.isHost && (
-                <button onClick={handleStartGame} disabled={players.length < 2}>
-                    Start Game
-                </button>
+                <div className="mb-2">
+                    <Button
+                        onClick={handleStartGame}
+                        disabled={players.length < 2}
+                        variant={players.length < 2 ? 'disabled' : 'primary'}
+                    >
+                        Start Game
+                    </Button>
+                </div>
             )}
-            <ul>
-                {players.map(player => (
-                    <li key={player.name}>{player.name}</li>
-                ))}
-            </ul>
-        </div>
+        </Flex>
     );
 }
 
