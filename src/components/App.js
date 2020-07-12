@@ -1,12 +1,14 @@
-import React from 'react';
+/** @jsx jsx */
+import { jsx } from 'theme-ui';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import GameStateProvider from './GameStateProvider';
 import PlayerStateProvider from './PlayerStateProvider';
 import SocketProvider from './SocketProvider';
+import ThemeProvider from './ThemeProvider';
 import Nav from './Nav';
 import Home from './Home';
-import '../App.css';
+import Title from './Title';
 
 function About() {
     return <h2>About</h2>;
@@ -18,17 +20,20 @@ function App() {
             <GameStateProvider>
                 <PlayerStateProvider>
                     <SocketProvider>
-                        <Nav />
-                        <div className="App">
-                            <Switch>
-                                <Route path="/about">
-                                    <About />
-                                </Route>
-                                <Route path="/">
-                                    <Home />
-                                </Route>
-                            </Switch>
-                        </div>
+                        <ThemeProvider>
+                            <Nav />
+                            <Title>Swipe</Title>
+                            <div className="container mx-auto">
+                                <Switch>
+                                    <Route path="/about">
+                                        <About />
+                                    </Route>
+                                    <Route path="/">
+                                        <Home />
+                                    </Route>
+                                </Switch>
+                            </div>
+                        </ThemeProvider>
                     </SocketProvider>
                 </PlayerStateProvider>
             </GameStateProvider>

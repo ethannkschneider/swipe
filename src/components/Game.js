@@ -11,6 +11,7 @@ function Game() {
         progress,
         flippedTiles,
         numUnflippedTiles,
+        players,
         currentPlayerName
     } = useGameState();
     const player = usePlayerState();
@@ -57,12 +58,24 @@ function Game() {
             {player.name === currentPlayerName && (
                 <button onClick={handleFlip}>Flip</button>
             )}
+            <div>Points: {player.words.join('').length}</div>
             <h4>Your Words:</h4>
             <ul>
                 {player.words.map((word, i) => (
                     <li key={i}>{word}</li>
                 ))}
             </ul>
+            <h5>Other players: </h5>
+            <div>
+                {players.map(otherPlayer => (
+                    <div>
+                        {otherPlayer.name}:{' '}
+                        {otherPlayer.words.map((word, i) => (
+                            <div key={i}> {word}</div>
+                        ))}
+                    </div>
+                ))}
+            </div>
             <h5>Log:</h5>
             <div></div>
             <form onSubmit={handleTakeWord}>

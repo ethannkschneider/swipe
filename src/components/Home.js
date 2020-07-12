@@ -1,31 +1,16 @@
-import React from 'react';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+/** @jsx jsx */
+import { jsx } from 'theme-ui';
 
-import CreateGameForm from './CreateGameForm';
-import JoinGameForm from './JoinGameForm';
 import Game from './Game';
+import JoinOrCreateGame from './JoinOrCreateGame';
 import { useGameState } from './GameStateProvider';
 
 function Home() {
     const gameState = useGameState();
 
     if (gameState.room) return <Game />;
-    return (
-        <Tabs>
-            <TabList>
-                <Tab>Join Game</Tab>
-                <Tab>Create Game</Tab>
-            </TabList>
 
-            <TabPanel>
-                <JoinGameForm />
-            </TabPanel>
-            <TabPanel>
-                <CreateGameForm />
-            </TabPanel>
-        </Tabs>
-    );
+    return <JoinOrCreateGame />;
 }
 
 export default Home;
