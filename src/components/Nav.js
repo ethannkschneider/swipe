@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { useGameState } from './GameStateProvider';
+import { usePlayerState } from './PlayerStateProvider';
 
 function Nav() {
-    const { room, currentPlayer } = useGameState();
+    const { room } = useGameState();
+    const player = usePlayerState();
 
     const handleLeaveRoom = e => {
         localStorage.removeItem('swipe-game');
@@ -24,7 +26,7 @@ function Nav() {
                 <li>
                     <button onClick={handleLeaveRoom}>Leave room</button>
                 </li>
-                {currentPlayer && <li>Player: {currentPlayer.name}</li>}
+                {player && <li>Player: {player.name}</li>}
             </ul>
         </nav>
     );

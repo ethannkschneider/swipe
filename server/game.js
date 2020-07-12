@@ -29,11 +29,12 @@ function onCreateGame(data) {
     }
 
     const game = createNewGame(roomId, name);
+    const player = game.players[0];
+    player.socketId = this.id;
     this.join(roomId);
     this.emit('gameCreated', {
-        name,
-        socketId: this.id,
-        ...game.getPublicState()
+        player,
+        game: game.getPublicState()
     });
 }
 
@@ -57,19 +58,17 @@ function onJoinGame(data) {
     }
 
     game.addNewPlayer(name);
+    const player = game.getPlayerByName(name);
+    player.socketId = this.id;
 
     this.join(roomId);
 
     this.emit('playerJoined', {
-        name,
-        room,
-        socketId: this.id,
-        ...game.getPublicState()
+        player,
+        game: game.getPublicState()
     });
 
-    io.sockets.in(roomId).emit('playerJoined', {
-        ...game.getPublicState()
-    });
+    io.sockets.in(roomId).emit('newPlayerJoined', { game });
 }
 
 function onStartGame(data) {
@@ -81,7 +80,7 @@ function onStartGame(data) {
 
     game.start();
 
-    io.sockets.in(roomId).emit('gameStarted', { ...game.getPublicState() });
+    io.sockets.in(roomId).emit('gameStarted', { game: game.getPublicState() });
 }
 
 function onFlipTile(data) {
@@ -98,7 +97,7 @@ function onFlipTile(data) {
 
     game.flipTile();
 
-    io.sockets.in(roomId).emit('tileFlipped', { ...game.getPublicState() });
+    io.sockets.in(roomId).emit('tileFlipped', { game: game.getPublicState() });
 }
 
 function onTakeNewWord(data) {
@@ -113,7 +112,7 @@ function onTakeNewWord(data) {
     }
 
     game.takeNewWord(word, name);
-    io.sockets.in(roomId).emit('wordTaken', { ...game.getPublicState() });
+    io.sockets.in(roomId).emit('wordTaken', { game: game.getPublicState() });
 }
 
 /* *************************

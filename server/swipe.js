@@ -33,56 +33,46 @@ class Swipe {
     constructor(roomId, players) {
         this._turnIdx = 0;
         this.roomId = roomId;
-        this.gameState = {
-            progress: 'notStarted',
-            players,
-            unflippedTiles: Swipe.generateInitialLetters(),
-            flippedTiles: [],
-            currentPlayerName: players[0].name
-        };
+        this.progress = 'notStarted';
+        this.players = players;
+        this.unflippedTiles = Swipe.generateInitialLetters();
+        this.flippedTiles = [];
+        this.currentPlayerName = players[0].name;
     }
 
     getPublicState() {
         return {
             room: this.roomId,
-            gameState: _.merge(
-                {},
-                _.pick(this.gameState, [
-                    'progress',
-                    'players',
-                    'flippedTiles',
-                    'turn'
-                ]),
-                {
-                    currentPlayerName: this.getCurrentPlayer().name,
-                    numUnflippedTiles: this.gameState.unflippedTiles.length
-                }
-            )
+            progress: this.progress,
+            players: this.players,
+            flippedTiles: this.flippedTiles,
+            currentPlayerName: this.getCurrentPlayer().name,
+            numUnflippedTiles: this.unflippedTiles.length
         };
     }
 
     addNewPlayer(name) {
         const newPlayer = Swipe.createNewPlayer({ name, isHost: false });
-        this.gameState.players.push(newPlayer);
+        this.players.push(newPlayer);
     }
 
     start() {
-        this.gameState.progress = 'inProgress';
+        this.progress = 'inProgress';
         this.shufflePlayers();
     }
 
     nextTurn() {
-        this._turnIdx = (this._turnIdx + 1) % this.gameState.players.length;
+        this._turnIdx = (this._turnIdx + 1) % this.players.length;
     }
 
     flipTile() {
-        const letter = this.gameState.unflippedTiles.pop();
-        this.gameState.flippedTiles.push(letter);
+        const letter = this.unflippedTiles.pop();
+        this.flippedTiles.push(letter);
         this.nextTurn();
     }
 
     getCurrentPlayer() {
-        return this.gameState.players[this._turnIdx];
+        return this.players[this._turnIdx];
     }
 
     isTurnOf(name) {
@@ -90,12 +80,12 @@ class Swipe {
     }
 
     shufflePlayers() {
-        shuffleArray(this.gameState.players);
+        shuffleArray(this.players);
     }
 
     isNewWordValid(word) {
         let isValid = true;
-        const flippedTiles = [...this.gameState.flippedTiles];
+        const flippedTiles = [...this.flippedTiles];
 
         word.toLowerCase()
             .split('')
@@ -114,20 +104,24 @@ class Swipe {
     takeNewWord(word, name) {
         word.split('').forEach(ltr => {
             const idx = _.findIndex(ltr);
-            this.gameState.flippedTiles.splice(idx, 1);
+            this.flippedTiles.splice(idx, 1);
         });
 
         const playerIdx = _.findIndex(
-            this.gameState.players,
+            this.players,
             player => player.name === name
         );
-        const player = this.gameState.players[playerIdx];
+        const player = this.players[playerIdx];
         player.words.push(word);
         this.setTurnIdx(playerIdx);
     }
 
     setTurnIdx(idx) {
         this._turnIdx = idx;
+    }
+
+    getPlayerByName(name) {
+        return _.find(this.players, player => player.name === name);
     }
 
     static createNewGame(roomId, creatorName) {
@@ -142,7 +136,6 @@ class Swipe {
         return {
             name,
             isHost,
-            points: 0,
             words: []
         };
     }

@@ -7,9 +7,11 @@ const GameDispatchContext = React.createContext();
 const localStorageKey = 'swipe-game';
 const initialGameState = {
     room: '',
-    name: '',
-    socketId: '',
-    gameState: {}
+    progress: 'notStarted',
+    players: [],
+    currentPlayerName: '',
+    flippedTiles: [],
+    numUnflippedTiles: 98
 };
 
 const withLocalStorageCache = reducer => {
@@ -34,51 +36,9 @@ const withLogging = reducer => {
     };
 };
 
-const withCurrentPlayer = reducer => {
-    return (state, action) => {
-        const newState = reducer(state, action);
-
-        const playerName = newState.name;
-
-        const player = _.find(
-            newState.gameState.players,
-            player => player.name === playerName
-        );
-
-        return {
-            ...newState,
-            player
-        };
-    };
-};
-
 function gameReducer(state, action) {
     switch (action.type) {
-        case 'gameCreated': {
-            return {
-                ...state,
-                ...action.payload
-            };
-        }
-        case 'playerJoined': {
-            return {
-                ...state,
-                ...action.payload
-            };
-        }
-        case 'gameStarted': {
-            return {
-                ...state,
-                ...action.payload
-            };
-        }
-        case 'tileFlipped': {
-            return {
-                ...state,
-                ...action.payload
-            };
-        }
-        case 'wordTaken': {
+        case 'updateGameState': {
             return {
                 ...state,
                 ...action.payload
@@ -92,7 +52,7 @@ function gameReducer(state, action) {
 
 function GameStateProvider({ children }) {
     const [state, dispatch] = React.useReducer(
-        withLogging(withCurrentPlayer(gameReducer)),
+        withLogging(gameReducer),
         JSON.parse(localStorage.getItem(localStorageKey)) || initialGameState
     );
 

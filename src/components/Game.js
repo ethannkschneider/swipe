@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 
 import { useGameState } from './GameStateProvider';
+import { usePlayerState, usePlayer } from './PlayerStateProvider';
 import { useSocket } from './SocketProvider';
 import WaitingScreen from './WaitingScreen';
 
 function Game() {
     const {
         room,
-        player,
-        gameState: {
-            progress,
-            flippedTiles,
-            numUnflippedTiles,
-            currentPlayerName
-        }
+        progress,
+        flippedTiles,
+        numUnflippedTiles,
+        currentPlayerName
     } = useGameState();
-    const [word, setWord] = useState('');
+    const player = usePlayerState();
+    const [currWord, setCurrWord] = useState('');
 
     const socket = useSocket(room);
 
@@ -32,13 +31,21 @@ function Game() {
     };
 
     const handleUpdateWord = e => {
-        setWord(e.target.value);
+        setCurrWord(e.target.value);
+    };
+
+    const clearWord = () => {
+        setCurrWord('');
     };
 
     const handleTakeWord = e => {
         e.preventDefault();
-        socket.emit('takeNewWord', { word, roomId: room, name: player.name });
-        setWord('');
+        socket.emit('takeNewWord', {
+            word: currWord,
+            roomId: room,
+            name: player.name
+        });
+        clearWord();
     };
 
     return (
@@ -56,8 +63,10 @@ function Game() {
                     <li key={i}>{word}</li>
                 ))}
             </ul>
+            <h5>Log:</h5>
+            <div></div>
             <form onSubmit={handleTakeWord}>
-                <input value={word} onChange={handleUpdateWord} />
+                <input value={currWord} onChange={handleUpdateWord} />
                 <button>Take word</button>
             </form>
         </div>
