@@ -1,6 +1,8 @@
 /** @jsx jsx */
 import { jsx } from 'theme-ui';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import GameStateProvider from './GameStateProvider';
 import PlayerStateProvider from './PlayerStateProvider';
@@ -21,6 +23,17 @@ function App() {
                 <PlayerStateProvider>
                     <SocketProvider>
                         <ThemeProvider>
+                            <ToastContainer
+                                position="top-right"
+                                autoClose={5000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                            />
                             <Nav />
                             <Title>Swipe</Title>
                             <div className="container mx-auto">

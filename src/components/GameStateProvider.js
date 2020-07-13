@@ -1,5 +1,6 @@
 import React from 'react';
-import _ from 'lodash';
+
+import * as UTILS from '../utils';
 
 const GameStateContext = React.createContext();
 const GameDispatchContext = React.createContext();
@@ -12,14 +13,6 @@ const initialGameState = {
     currentPlayerName: '',
     flippedTiles: [],
     numUnflippedTiles: 98
-};
-
-const withLocalStorageCache = reducer => {
-    return (state, action) => {
-        const newState = reducer(state, action);
-        localStorage.setItem(localStorageKey, JSON.stringify(newState));
-        return newState;
-    };
 };
 
 const withLogging = reducer => {
@@ -51,8 +44,10 @@ function gameReducer(state, action) {
 }
 
 function GameStateProvider({ children }) {
+    const withLocalStorage = UTILS.withLocalStorageCache(localStorageKey);
+
     const [state, dispatch] = React.useReducer(
-        withLogging(gameReducer),
+        withLocalStorage(withLogging(gameReducer)),
         JSON.parse(localStorage.getItem(localStorageKey)) || initialGameState
     );
 

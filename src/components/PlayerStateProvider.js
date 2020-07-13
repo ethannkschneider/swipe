@@ -1,26 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import _ from 'lodash';
 
-import useGameState from './GameStateProvider';
+import * as UTILS from '../utils';
 
 const PlayerStateContext = React.createContext();
 const PlayerDispatchContext = React.createContext();
 
-const localStorageKey = 'swipe-game';
+const localStorageKey = 'swipe-player';
 const initialState = {
     name: '',
     socketId: '',
     words: [],
     isTurnToFlip: false,
     isHost: false
-};
-
-const withLocalStorageCache = reducer => {
-    return (state, action) => {
-        const newState = reducer(state, action);
-        localStorage.setItem(localStorageKey, JSON.stringify(newState));
-        return newState;
-    };
 };
 
 const withLogging = reducer => {
@@ -64,19 +56,11 @@ function playerReducer(state, action) {
 }
 
 function PlayerStateProvider({ children }) {
+    const withLocalStorage = UTILS.withLocalStorageCache(localStorageKey);
     const [state, dispatch] = React.useReducer(
-        withLogging(playerReducer),
+        withLocalStorage(withLogging(playerReducer)),
         JSON.parse(localStorage.getItem(localStorageKey)) || initialState
     );
-
-    // const gameState = useGameState();
-
-    // useEffect(() => {
-    //     dispatch({
-    //         type: 'derivePlayerStateFromGameState',
-    //         payload: gameState
-    //     });
-    // });
 
     return (
         <PlayerStateContext.Provider value={state}>
@@ -90,7 +74,7 @@ function PlayerStateProvider({ children }) {
 export function usePlayerState() {
     const context = React.useContext(PlayerStateContext);
     if (typeof context === 'undefined') {
-        throw new Error('useGameState must be used within in a GameProvider');
+        throw new Error('usePlayerState must be used within in a GameProvider');
     }
 
     return context;
@@ -99,7 +83,7 @@ export function usePlayerState() {
 export function usePlayerDispatch() {
     const context = React.useContext(PlayerDispatchContext);
     if (typeof context === 'undefined') {
-        throw new Error('useGameState must be used within in a GameProvider');
+        throw new Error('usePlayerState must be used within in a GameProvider');
     }
 
     return context;

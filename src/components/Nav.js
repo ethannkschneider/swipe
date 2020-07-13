@@ -11,7 +11,9 @@ function Nav() {
     const player = usePlayerState();
 
     const handleLeaveRoom = e => {
+        e.preventDefault();
         localStorage.removeItem('swipe-game');
+        localStorage.removeItem('swipe-player');
         window.location.reload();
     };
 

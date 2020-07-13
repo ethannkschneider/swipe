@@ -52,8 +52,16 @@ function onJoinGame(data) {
     }
 
     const game = findGameByRoomId(roomId);
+
     if (!game) {
         this.emit('err', { message: 'Sorry, that room does not exist' });
+        return;
+    }
+    if (game.players.some(player => player.name === name)) {
+        this.emit('err', {
+            message:
+                'Sorry, there is someone else in the same room with that name. Please pick a different name.'
+        });
         return;
     }
 

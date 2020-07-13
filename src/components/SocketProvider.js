@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import { toast } from 'react-toastify';
 
 import { useGameDispatch } from './GameStateProvider';
 import { usePlayerDispatch } from './PlayerStateProvider';
@@ -18,6 +19,7 @@ function SocketProvider({ children }) {
         });
         sock.on('err', data => {
             console.log('err: ', data.message);
+            toast.error(data.message);
         });
         sock.on('gameCreated', data => {
             gameDispatch({ type: 'updateGameState', payload: data.game });
