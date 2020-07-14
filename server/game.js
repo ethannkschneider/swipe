@@ -144,7 +144,7 @@ function findGameByRoomId(roomId) {
 function validateRoomHasSocket(roomId) {
     if (!gameSocket.rooms.hasOwnProperty(roomId)) {
         gameSocket.emit('err', { message: 'Wrong room!' });
-        throw new Error(`Request denied; wrong room!`);
+        return;
     }
 }
 

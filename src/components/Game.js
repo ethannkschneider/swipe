@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+/** @jsx jsx */
+import { jsx, Text, Flex } from 'theme-ui';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 import { useGameState } from './GameStateProvider';
 import { usePlayerState, usePlayer } from './PlayerStateProvider';
 import { useSocket } from './SocketProvider';
 import WaitingScreen from './WaitingScreen';
+import Opponent from './Opponent';
+import Input from './Input';
+import Form from './Form';
+import * as UTILS from '../utils';
 
 function Game() {
     const {
@@ -39,8 +46,19 @@ function Game() {
         setCurrWord('');
     };
 
+    const isNewWordValid = () => {
+        return (
+            currWord.length >= 4 &&
+            UTILS.canWordBeFormedFromLetters(currWord, flippedTiles)
+        );
+    };
+
     const handleTakeWord = e => {
         e.preventDefault();
+        if (!isNewWordValid()) {
+            toast.error('Invalid word');
+            return;
+        }
         socket.emit('takeNewWord', {
             word: currWord,
             roomId: room,
@@ -50,9 +68,15 @@ function Game() {
     };
 
     return (
-        <div>
-            <h2>Room: {room} </h2>
-            <p>Your name: {player.name}</p>
+        <Flex sx={{ flexDirection: 'column' }}>
+            <Flex>
+                {players
+                    .filter(pl => pl.name !== player.name)
+                    .map(pl => (
+                        <Opponent key={`opponent-${pl.name}`} {...pl} />
+                    ))}
+                <Text></Text>
+            </Flex>
             <p>Flipped tiles: {flippedTiles}</p>
             <p>Hidden tiles: {numUnflippedTiles}</p>
             {player.name === currentPlayerName && (
@@ -78,11 +102,11 @@ function Game() {
             </div>
             <h5>Log:</h5>
             <div></div>
-            <form onSubmit={handleTakeWord}>
-                <input value={currWord} onChange={handleUpdateWord} />
+            <Form onSubmit={handleTakeWord}>
+                <Input value={currWord} onChange={handleUpdateWord} />
                 <button>Take word</button>
-            </form>
-        </div>
+            </Form>
+        </Flex>
     );
 }
 
