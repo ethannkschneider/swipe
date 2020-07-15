@@ -1,12 +1,21 @@
 /** @jsx jsx */
 import { jsx, Text, Flex, Box, Heading } from 'theme-ui';
 
+function Word({ children }) {
+    return <Text>{children}</Text>;
+}
+
 function Opponent({ name, words }) {
+    console.log({ name, words });
     return (
-        <Flex sx={{ flexDirection: 'column' }}>
+        <Box>
             <Heading>{name}</Heading>
-            <Box></Box>
-        </Flex>
+            <Flex>
+                {words.map((word, i) => (
+                    <Word key={`${word}-${i}`}>{word}</Word>
+                ))}
+            </Flex>
+        </Box>
     );
 }
 

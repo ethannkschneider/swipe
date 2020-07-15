@@ -47,7 +47,7 @@ function GameStateProvider({ children }) {
     const withLocalStorage = UTILS.withLocalStorageCache(localStorageKey);
 
     const [state, dispatch] = React.useReducer(
-        withLocalStorage(withLogging(gameReducer)),
+        withLocalStorage(gameReducer),
         JSON.parse(localStorage.getItem(localStorageKey)) || initialGameState
     );
 

@@ -34,3 +34,6 @@ export const canWordBeFormedFromLetters = (word, letters) => {
 
     return enoughLetters;
 };
+
+export const calculatePoints = words =>
+    words.reduce((total, word) => total + word.length, 0);

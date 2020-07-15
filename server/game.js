@@ -147,18 +147,6 @@ function validateRoomHasSocket(roomId) {
         return;
     }
 }
-
-/**
- * Get a word for the host, and a list of words for the player.
- *
- * @param wordPoolIndex
- * @param gameId The room identifier
- */
-function sendWord(wordPoolIndex, gameId) {
-    var data = getWordData(wordPoolIndex);
-    io.sockets.in(data.gameId).emit('newWordData', data);
-}
-
 /**
  * This function does all the work of getting a new words from the pile
  * and organizing the data to be sent back to the clients.

@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx, Text, Flex } from 'theme-ui';
+import { jsx, Text, Flex, Button } from 'theme-ui';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -68,28 +68,31 @@ function Game() {
     };
 
     return (
-        <Flex sx={{ flexDirection: 'column' }}>
+        <Flex sx={{ flexDirection: 'column', justifyContent: 'space-between' }}>
             <Flex>
                 {players
                     .filter(pl => pl.name !== player.name)
                     .map(pl => (
-                        <Opponent key={`opponent-${pl.name}`} {...pl} />
+                        <Opponent
+                            key={`opponent-${pl.name}`}
+                            name={pl.name}
+                            words={pl.words}
+                        />
                     ))}
-                <Text></Text>
             </Flex>
             <p>Flipped tiles: {flippedTiles}</p>
             <p>Hidden tiles: {numUnflippedTiles}</p>
             {player.name === currentPlayerName && (
                 <button onClick={handleFlip}>Flip</button>
             )}
-            <div>Points: {player.words.join('').length}</div>
-            <h4>Your Words:</h4>
+            {/* <div>Points: {player.words.join('').length}</div> */}
+            {/* <h4>Your Words:</h4>
             <ul>
                 {player.words.map((word, i) => (
                     <li key={i}>{word}</li>
                 ))}
-            </ul>
-            <h5>Other players: </h5>
+            </ul> */}
+            {/* <h5>Other players: </h5>
             <div>
                 {players.map(otherPlayer => (
                     <div>
@@ -99,13 +102,52 @@ function Game() {
                         ))}
                     </div>
                 ))}
+            </div> */}
+            {/* <h5>Log:</h5>
+            <div></div> */}
+
+            <div className="w-full max-w-xl m-auto">
+                <Flex
+                    sx={{ flexDirection: 'column', alignItems: 'center' }}
+                    className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                >
+                    <Text sx={{ fontSize: theme => theme.fontSizes[4] }}>
+                        {player.name}
+                    </Text>
+                    <form onSubmit={handleTakeWord} noValidate className="mb-3">
+                        <div className="mb-3">
+                            <Input
+                                value={currWord}
+                                onChange={handleUpdateWord}
+                                placeholder="Enter a word to take"
+                            />
+                        </div>
+                        <Flex sx={{ justifyContent: 'center' }}>
+                            <Button>Take word</Button>
+                        </Flex>
+                    </form>
+                    <Flex sx={{ width: '100%', flexWrap: 'wrap' }}>
+                        {player.words.map((word, i) => (
+                            <div
+                                className="py-1 px-5 mx-1 my-1"
+                                sx={{
+                                    background: theme => theme.colors.purple[2],
+                                    borderRadius: '6px',
+                                    border: theme =>
+                                        `2px solid ${theme.colors.purple[3]}`
+                                }}
+                            >
+                                <Text>{word}</Text>
+                            </div>
+                        ))}
+                    </Flex>
+                    <Flex sx={{ justifyContent: 'flex-end', width: '100%' }}>
+                        <Text>
+                            Points: {UTILS.calculatePoints(player.words)}
+                        </Text>
+                    </Flex>
+                </Flex>
             </div>
-            <h5>Log:</h5>
-            <div></div>
-            <Form onSubmit={handleTakeWord}>
-                <Input value={currWord} onChange={handleUpdateWord} />
-                <button>Take word</button>
-            </Form>
         </Flex>
     );
 }

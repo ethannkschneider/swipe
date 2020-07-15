@@ -58,7 +58,7 @@ function playerReducer(state, action) {
 function PlayerStateProvider({ children }) {
     const withLocalStorage = UTILS.withLocalStorageCache(localStorageKey);
     const [state, dispatch] = React.useReducer(
-        withLocalStorage(withLogging(playerReducer)),
+        withLocalStorage(playerReducer),
         JSON.parse(localStorage.getItem(localStorageKey)) || initialState
     );
 
