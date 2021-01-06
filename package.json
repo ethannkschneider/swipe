@@ -10,7 +10,7 @@
         "@theme-ui/presets": "^0.3.0",
         "antd": "^4.2.5",
         "autoprefixer": "^9.8.5",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "body-parser": "^1.19.0",
         "classnames": "^2.2.6",
         "dotenv": "^8.2.0",
