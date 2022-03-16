@@ -1,4 +1,4 @@
-const LETTER_FREQUENCIES = new Map([
+export const LETTER_FREQUENCIES = new Map([
     ['a', 9],
     ['b', 2],
     ['c', 2],
@@ -27,6 +27,4 @@ const LETTER_FREQUENCIES = new Map([
     ['z', 1]
 ]);
 
-module.exports = {
-    LETTER_FREQUENCIES
-};
+export const MAX_PLAYERS_PER_ROOM = 6;
